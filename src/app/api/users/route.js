@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import withAuth from '../auth/withAuth';
-import bcrypt from 'bcrypt'
+import { NextResponse } from 'next/server'; // Importa NextResponse
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 export async function GET(request) {
     try {
-
         const verifyUser = await withAuth(request);
 
         if (verifyUser.status === 400) {

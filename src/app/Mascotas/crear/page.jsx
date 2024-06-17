@@ -1,15 +1,15 @@
-"use client"
-import React, { useState, useRef, useEffect } from 'react'
+"use client"; // Añade esta línea al principio del archivo
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import BasicModal from '@/app/components/BasicModal';
+import { useRouter } from 'next/navigation';
 import Title from '@/app/components/Title';
 
 const page = () => {
     const inputFileRef = useRef(null);
+    const router = useRouter();
     const [races, setRaces] = useState([]);
-    const [genders, setGenders] = useState([])
-    const [categories, setCategories] = useState([])
-    const [modalOpen, setModalOpen] = useState(false);
+    const [genders, setGenders] = useState([]);
+    const [categories, setCategories] = useState([]);
 
     const [newPet, setNewPet] = useState({
         name: '',
@@ -26,7 +26,7 @@ const page = () => {
             ...newPet,
             [name]: value
         });
-        console.log(newPet)
+        console.log(newPet);
     };
 
     const handleFileCancel = () => {
@@ -49,7 +49,7 @@ const page = () => {
                 photo: selectedFile
             });
         }
-        console.log(newPet)
+        console.log(newPet);
     };
 
     const handleImageClick = () => {
@@ -67,12 +67,12 @@ const page = () => {
         data.append('gender', newPet.gender);
         data.append('username', newPet.username);
 
-        console.log(data)
+        console.log(data);
 
         try {
             const response = await axios.post('http://localhost:3000/api/pets', data);
             console.log(response.data); // Manejar la respuesta del servidor si es necesario
-            setModalOpen(true);
+            router.push('/Mascotas'); // Redirigir a la página de mascotas
         } catch (error) {
             console.error(error); // Manejar errores de la solicitud
         }
@@ -86,7 +86,7 @@ const page = () => {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const getCategories = async () => {
         try {
@@ -96,7 +96,7 @@ const page = () => {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const getGenders = async () => {
         try {
@@ -106,7 +106,7 @@ const page = () => {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     useEffect(() => {
         getRaces();
@@ -130,14 +130,14 @@ const page = () => {
                             onClick={handleImageClick}
                         >
                             <img src="/btn-edit.svg" alt="" />
-                        </div></>
+                        </div>
+                    </>
                 ) : (
                     <>
                         <img
                             src="/photo-lg-0.svg" // Mostrar la imagen predeterminada si no se selecciona ninguna imagen nueva
                             alt="Foto de la mascota predeterminada"
                             className='w-[160px] h-[160px] rounded-[50%]'
-
                         />
                         <div
                             className='absolute top-[120px] rigth-[50%] z-[90]'
@@ -163,7 +163,7 @@ const page = () => {
                         onChange={handleChange}>
                         <option value="" className='font-semibold text-opacity-50'>Seleccione una raza</option>
                         {races.map(race => (
-                            <option value={race.id} className='font-semibold opacity-50'>{race.name}</option>
+                            <option key={race.id} value={race.id} className='font-semibold opacity-50'>{race.name}</option>
                         ))}
                     </select>
                     <select
@@ -173,10 +173,9 @@ const page = () => {
                         onChange={handleChange}>
                         <option value="" className='font-semibold text-opacity-50'>Seleccione una categoría</option>
                         {categories.map(category => (
-                            <option value={category.id} className='font-semibold opacity-50'>{category.name}</option>
+                            <option key={category.id} value={category.id} className='font-semibold opacity-50'>{category.name}</option>
                         ))}
                     </select>
-
                     <input
                         type="file"
                         className='hidden' // Esconder el input
@@ -190,9 +189,9 @@ const page = () => {
                         name="gender"
                         value={newPet.gender}
                         onChange={handleChange}>
-                        <option value="1" className='font-semibold text-opacity-50'>Seleccione el genero</option>
+                        <option value="" className='font-semibold text-opacity-50'>Seleccione el género</option>
                         {genders.map(gender => (
-                            <option value={gender.id} className='font-semibold opacity-50'>{gender.name}</option>
+                            <option key={gender.id} value={gender.id} className='font-semibold opacity-50'>{gender.name}</option>
                         ))}
                     </select>
                     <button
@@ -203,8 +202,8 @@ const page = () => {
                     </button>
                 </div>
             </form>
-            <BasicModal open={modalOpen} onClose={() => setModalOpen(false)} title="Registro Exitoso" description="Has registrado exitosamente la mascota"></BasicModal>
         </div>
-    )
-}
-export default page
+    );
+};
+
+export default page;

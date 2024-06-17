@@ -78,12 +78,6 @@ const page = () => {
                         {pet.gender?.name}
                     </div>
                 </div>
-                <div className='flex w-full items-center justify-center gap-3'>
-                    <a href={`/Mascotas/${id}/Modificar`}>
-                        <img src="/btn-edit.svg" alt="" className='w-[50px]' />
-                    </a>
-                    <img src="/btn-delete.svg" alt="" className='w-[50px]' onClick={deletePet} />
-                </div>
             </div>
         </div>
     )

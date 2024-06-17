@@ -1,18 +1,17 @@
-"use client"
-import React, { useState, useRef, useEffect } from 'react'
+"use client";
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import BasicModal from '@/app/components/BasicModal';
 import Title from '@/app/components/Title';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
-const page = () => {
+const Page = () => {
     const inputFileRef = useRef(null);
     const [races, setRaces] = useState([]);
-    const [genders, setGenders] = useState([])
-    const [categories, setCategories] = useState([])
-    const [modalOpen, setModalOpen] = useState(false);
+    const [genders, setGenders] = useState([]);
+    const [categories, setCategories] = useState([]);
 
     const { id } = useParams(); // Obtén el id desde useParams
+    const router = useRouter();
 
     const [pet, setPet] = useState([]);
     const [newPet, setNewPet] = useState({
@@ -26,21 +25,19 @@ const page = () => {
     const getPet = async () => {
         try {
             const response = await axios.get(`http://localhost:3000/api/pets/${id}`);
-            const petData = response.data
+            const petData = response.data;
             setPet(petData);
-            console.log(petData)
             setNewPet({
                 name: petData.name,
                 race: petData.race.id,
                 category: petData.category.id,
                 photo: petData.photo,
                 gender: petData.gender_id
-            })
-
+            });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
-    }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -48,30 +45,16 @@ const page = () => {
             ...newPet,
             [name]: value
         });
-        console.log(newPet)
-    };
-
-    const handleFileCancel = () => {
-        // Verificar si ya hay una imagen seleccionada
-        if (!newPet.photo) {
-            // Si no hay una imagen seleccionada, mostrar la imagen predeterminada
-            setNewPet({
-                ...newPet,
-                photo: null // Asegurarse de que photo esté establecido en null
-            });
-        }
     };
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
-            // Si se seleccionó un archivo, actualizar el estado con la nueva imagen
             setNewPet({
                 ...newPet,
                 photo: selectedFile
             });
         }
-        console.log(newPet)
     };
 
     const handleImageClick = () => {
@@ -88,58 +71,52 @@ const page = () => {
         data.append('photo', newPet.photo);
         data.append('gender', newPet.gender);
 
-        console.log(data)
-
         try {
-            const response = await axios.put(`http://localhost:3000/api/pets/${id}`, data);
-            console.log(response.data); // Manejar la respuesta del servidor si es necesario
-            setModalOpen(true);
+            await axios.put(`http://localhost:3000/api/pets/${id}`, data);
+            router.push('/Mascotas'); // Redirigir a la página de mascotas después de la actualización
         } catch (error) {
-            console.error(error); // Manejar errores de la solicitud
+            console.error(error);
         }
     };
 
     const getRaces = async () => {
         try {
             const response = await axios.get('http://localhost:3000/api/races');
-            const data = response.data;
-            setRaces(data);
+            setRaces(response.data);
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const getCategories = async () => {
         try {
             const response = await axios.get('http://localhost:3000/api/categories');
-            const data = response.data;
-            setCategories(data);
+            setCategories(response.data);
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const getGenders = async () => {
         try {
             const response = await axios.get('http://localhost:3000/api/genders');
-            const data = response.data;
-            setGenders(data);
+            setGenders(response.data);
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     useEffect(() => {
         getPet();
         getRaces();
         getCategories();
-        getGenders();     
+        getGenders();
     }, []);
 
     if (!pet) return <div>Loading...</div>;
 
     return (
-        <div className='bg-blue-800 w-full min-h-screen flex flex-col items-center '>
+        <div className='bg-blue-800 w-full min-h-screen flex flex-col items-center'>
             <Title title="Modificar Mascota" />
             <form className='flex flex-col items-center justify-center w-full relative' onSubmit={handleSubmit}>
                 {newPet.photo ? (
@@ -154,14 +131,14 @@ const page = () => {
                             onClick={handleImageClick}
                         >
                             <img src="/btn-edit.svg" alt="" />
-                        </div></>
+                        </div>
+                    </>
                 ) : (
                     <>
                         <img
                             src={`/${pet.photo}`} // Mostrar la imagen predeterminada si no se selecciona ninguna imagen nueva
                             alt="Foto de la mascota predeterminada"
                             className='w-[160px] h-[160px] rounded-[50%]'
-
                         />
                         <div
                             className='absolute top-[120px] rigth-[50%] z-[90]'
@@ -197,16 +174,14 @@ const page = () => {
                         onChange={handleChange}>
                         <option value="" className='font-semibold text-opacity-50'>Seleccione una categoría</option>
                         {categories.map(category => (
-                            <option value={category.id} className='font-semibold opacity-50'>{category.name}</option>
+                            <option key={category.id} value={category.id} className='font-semibold opacity-50'>{category.name}</option>
                         ))}
                     </select>
-
                     <input
                         type="file"
                         className='hidden' // Esconder el input
                         ref={inputFileRef} // Referencia al input
                         onChange={handleFileChange}
-                        onCancel={handleFileCancel} // Manejar la cancelación de la selección de archivo
                         name="photo"
                     />
                     <select
@@ -214,9 +189,9 @@ const page = () => {
                         name="gender"
                         value={newPet.gender}
                         onChange={handleChange}>
-                        <option value="" className='font-semibold text-opacity-50'>Seleccione el genero</option>
+                        <option value="" className='font-semibold text-opacity-50'>Seleccione el género</option>
                         {genders.map(gender => (
-                            <option value={gender.id} className='font-semibold opacity-50'>{gender.name}</option>
+                            <option key={gender.id} value={gender.id} className='font-semibold opacity-50'>{gender.name}</option>
                         ))}
                     </select>
                     <button
@@ -227,8 +202,8 @@ const page = () => {
                     </button>
                 </div>
             </form>
-            <BasicModal open={modalOpen} onClose={() => setModalOpen(false)} title="Actualización Exitosa" description="Has actualizado exitosamente tu mascota"></BasicModal>
         </div>
-    )
-}
-export default page
+    );
+};
+
+export default Page;

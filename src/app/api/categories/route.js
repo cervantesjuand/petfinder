@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import withAuth from '../auth/withAuth';
+import { NextResponse } from 'next/server'; // Importa NextResponse
 
 const prisma = new PrismaClient();
 
